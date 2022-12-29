@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -10,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 const version = "1.0.0"
@@ -75,28 +74,37 @@ func main() {
 	logger.Fatal(err)
 }
 
-func openDB(cfg config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", cfg.db.dsn)
+func openDB(cfg config) (*pgxpool.Pool, error) {
+	db, err := pgxpool.Connect(context.Background(), cfg.db.dsn)
+
 	if err != nil {
 		return nil, err
 	}
+	defer db.Close()
+	/*
+		db, err := sql.Open("postgres", cfg.db.dsn)
+		if err != nil {
+			return nil, err
+		}
 
-	db.SetMaxOpenConns(cfg.db.maxOpenConns)
-	db.SetMaxIdleConns(cfg.db.maxIdleConns)
-	duration, err := time.ParseDuration(cfg.db.maxIdleTime)
-	if err != nil {
-		return nil, err
-	}
+		db.SetMaxOpenConns(cfg.db.maxOpenConns)
+		db.SetMaxIdleConns(cfg.db.maxIdleConns)
+		duration, err := time.ParseDuration(cfg.db.maxIdleTime)
+		if err != nil {
+			return nil, err
+		}
 
-	db.SetConnMaxIdleTime(duration)
+		db.SetConnMaxIdleTime(duration)
+	*/
+	/*
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+		err = db.Ping(ctx)
+		if err != nil {
+			return nil, err
+		}
 
-	err = db.PingContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+		return db, nil*/
 	return db, nil
 }
