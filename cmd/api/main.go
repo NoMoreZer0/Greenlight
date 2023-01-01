@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	"greenlight.adi.net/internal/data"
 )
 
 const version = "1.0.0"
@@ -24,13 +25,11 @@ type config struct {
 		maxIdleTime  string
 	}
 }
-type application struct {
-	maxOpenConns int
-	maxIdleConns int
-	maxIdleTime  string
 
+type application struct {
 	config config
 	logger *log.Logger
+	models data.Models
 }
 
 func main() {
@@ -58,6 +57,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModels(db),
 	}
 
 	srv := &http.Server{
@@ -80,7 +80,7 @@ func openDB(cfg config) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
+
 	/*
 		db, err := sql.Open("postgres", cfg.db.dsn)
 		if err != nil {
