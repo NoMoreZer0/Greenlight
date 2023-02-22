@@ -15,7 +15,6 @@ type MovieModel struct {
 	DB *pgxpool.Pool
 }
 
-// Add a placeholder method for inserting a new record in the movies table.
 func (m MovieModel) Insert(movie *Movie) error {
 	conn, err := m.DB.Acquire(context.Background())
 	if err != nil {
@@ -34,7 +33,6 @@ func (m MovieModel) Insert(movie *Movie) error {
 	return nil
 }
 
-// Add a placeholder method for fetching a specific record from the movies table.
 func (m MovieModel) Get(id int64) (*Movie, error) {
 	if id < 1 {
 		return nil, ErrRecordNotFound
@@ -65,7 +63,6 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	return &movie, nil
 }
 
-// Add a placeholder method for updating a specific record in the movies table.
 func (m MovieModel) Update(movie *Movie) error {
 	conn, err := m.DB.Acquire(context.Background())
 	if err != nil {
@@ -87,7 +84,6 @@ func (m MovieModel) Update(movie *Movie) error {
 	return nil
 }
 
-// Add a placeholder method for deleting a specific record from the movies table.
 func (m MovieModel) Delete(id int64) error {
 	if id < 1 {
 		return ErrRecordNotFound
